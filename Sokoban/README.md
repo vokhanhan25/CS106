@@ -1,2 +1,2 @@
-# Sokoban
-This is my project for CS106 homework - use dfs, bfs and ucs to upgrade auto mode for Sokoban game
+# Sokoban Assignemnt
+This is my exercise about DFS, BFS and UCS in CS106. 
