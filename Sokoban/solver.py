@@ -145,96 +145,121 @@ def isFailed(posBox):
 
 def depthFirstSearch(gameState):
     """Implement depthFirstSearch approach"""
-    beginBox = PosOfBoxes(gameState)
-    beginPlayer = PosOfPlayer(gameState)
+    beginBox = PosOfBoxes(gameState) #get the location of boxes
+    beginPlayer = PosOfPlayer(gameState) #get the location of player
 
-    startState = (beginPlayer, beginBox)
-    frontier = collections.deque([[startState]])
-    exploredSet = set()
-    actions = [[0]] 
-    temp = []
-    while frontier:
-        node = frontier.pop()
-        node_action = actions.pop()
-        if isEndState(node[-1][-1]):
-            temp += node_action[1:]
-            break
-        if node[-1] not in exploredSet:
-            exploredSet.add(node[-1])
-            for action in legalActions(node[-1][0], node[-1][1]):
-                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action)
+    startState = (beginPlayer, beginBox) # get the start state from  the location of boxes and player
+    # declare queue, push start state into the queue, this queue stores the states
+    frontier = collections.deque([[startState]]) 
+    exploredSet = set() #Declare the set of states have explore
+    actions = [[0]] # declare actions array, this queue stores the actions of the corresponding states
+    temp = [] #declare array temp
+    while frontier: # while the frontier node is not empty
+        node = frontier.pop()  # get the node at the right of the queue
+        node_action = actions.pop() #get the action at the right of the action array
+        if isEndState(node[-1][-1]): # check if all boxes are on the goals
+            temp += node_action[1:]  #if not yet explored, add this node into exploredSet
+            break #stop DFS
+        if node[-1] not in exploredSet:#check if the node is explopred
+            exploredSet.add(node[-1])  #if not yet explored, add this node into exploredSet
+            for action in legalActions(node[-1][0], node[-1][1]): #loop through valid actions
+
+                #store the new state after taking valid action on newPosPlayer, newPosBox
+                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action) 
+                 # if the state is potentially failed
                 if isFailed(newPosBox):
-                    continue
-                frontier.append(node + [(newPosPlayer, newPosBox)])
-                actions.append(node_action + [action[-1]])
-    return temp
-
+                    continue #if failed, skip and browse next action
+                frontier.append(node + [(newPosPlayer, newPosBox)]) # push the new state to the right of the frontier queue
+                actions.append(node_action + [action[-1]]) # push the new action to the right of the action queue
+    return temp #return array temp
+ 
 
 def breadthFirstSearch(gameState):
-    beginBox = PosOfBoxes(gameState)
-    beginPlayer = PosOfPlayer(gameState)
+    beginBox = PosOfBoxes(gameState) #get the location of boxes
+    beginPlayer = PosOfPlayer(gameState) #get the location of player
 
-    startState = (beginPlayer, beginBox) # e.g. ((2, 2), ((2, 3), (3, 4), (4, 4), (6, 1), (6, 4), (6, 5)))
-    frontier = collections.deque([[startState]]) # store states
-    actions = collections.deque([[0]]) # store actions
-    exploredSet = set()
-    temp = []
+    startState = (beginPlayer, beginBox) # get the start state from  the location of boxes and player
+
+    # declare frontier queue, push start state into the queue, this queue stores the states
+    frontier = collections.deque([[startState]]) 
+
+    # declare actions queue, this queue stores the actions of the corresponding states
+    actions = collections.deque([[0]]) 
+    exploredSet = set() #Declare the set of states have explore
+    temp = [] #declare array temp
 
     ### Implement breadthFirstSearch here
-    while frontier:
-        node = frontier.popleft()
-        node_action = actions.popleft()
-        if isEndState(node[-1][-1]):
-            temp += node_action[1:]
-            break 
-        if node[-1] not in exploredSet:
-            exploredSet.add(node[-1])
-            for action in legalActions(node[-1][0], node[-1][1]):
-                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action)
-                if isFailed(newPosBox):
-                    continue
-                frontier.append(node + [(newPosPlayer, newPosBox)])
-                actions.append(node_action + [action[-1]])
-    return temp
+    while frontier: # while the frontier node is not empty
+        node = frontier.popleft() # get the node at the left of the fronier queue
+        node_action = actions.popleft() #get the action at the left of the actions queue
+        if isEndState(node[-1][-1]):  # check if all boxes are on the goals
+            temp += node_action[1:] #if true, store action to temp array
+            break # stop BFS
+        if node[-1] not in exploredSet: #check if the node is explopred
+            exploredSet.add(node[-1]) #if not yet explored, add this node into exploredSet
+            for action in legalActions(node[-1][0], node[-1][1]): #loop through valid actions
+                #store the new state after taking valid action on newPosPlayer, newPosBox
+                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action) 
+                if isFailed(newPosBox): # if the state is potentially failed
+                    continue #if failed, skip and browse next action
+                # push the new state to the right of the frontier queue
+                frontier.append(node + [(newPosPlayer, newPosBox)]) 
+
+                # push the new action to the right of the action queue
+                actions.append(node_action + [action[-1]]) 
+    return temp #return array temp
 
 def cost(actions):
     return actions.count('l') + actions.count('r') + actions.count('u') + actions.count('d')
 
 def uniformCostSearch(gameState):
     """Implement uniformCostSearch approach"""
-    beginBox = PosOfBoxes(gameState)
-    beginPlayer = PosOfPlayer(gameState)
+    beginBox = PosOfBoxes(gameState) #get the location of boxes
+    beginPlayer = PosOfPlayer(gameState) #get the location of player
+ 
+    startState = (beginPlayer, beginBox) # get the start state from  the location of boxes and player
 
-    startState = (beginPlayer, beginBox)
+    # declare frontier priority queue, stores the states and the cost to them, prioritizing the states with the smallest cost to it
+    frontier = PriorityQueue() 
 
-    frontier = PriorityQueue()
+    #push start state into the queue, the start state has the cost to it = 0
     frontier.push([startState], 0)
     
-    exploredSet = set()
-    actions = PriorityQueue()
-    actions.push([0], 0)
-    temp = []
+    exploredSet = set() #Declare the set of states have explore
+
+    # declare priority queue, stores the actions and the cost, prioritizing the actions with the smallest cost
+
+    # declare actions priority queue, this queue stores the actions of the corresponding states
+    # prioritizing the states with the smallest cost to corresponding state
+    actions = PriorityQueue() 
+    actions.push([0], 0) #initiates the actions of the first state
+    temp = [] #declare array temp
     
     ### Implement uniform cost search here
-    while frontier:
-        node = frontier.pop()
-        node_action = actions.pop()
+    while frontier: # while the frontier node is not empty
+        node = frontier.pop()  # get the node has smallest cost
+        node_action = actions.pop() #get the action has smalles cost
 
-        if isEndState(node[-1][-1]):
-            temp += node_action[1:]
-            break
+        if isEndState(node[-1][-1]): # check if all boxes are on the goals
+            temp += node_action[1:]  #if true, store action to temp array
+            break #stop UCSs
 
-        if node[-1] not in exploredSet:
-            exploredSet.add(node[-1])
-            for action in legalActions(node[-1][0], node[-1][1]):
-                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action)
+        if node[-1] not in exploredSet: #if true, store action to temp array
+            exploredSet.add(node[-1]) #if not yet explored, add this node into exploredSet
+            for action in legalActions(node[-1][0], node[-1][1]): #loop through valid actions
 
-                if isFailed(newPosBox):
-                    continue
+                #store the new state after taking valid action on newPosPlayer, newPosBox
+                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action) 
 
+                if isFailed(newPosBox):  # if the state is potentially failed
+                    continue #if failed, skip and browse next action
+                
+                # push the new state to priority queue frontier, priority small cost
                 frontier.push(node + [(newPosPlayer, newPosBox)], cost(action))
+
+                # push the actions corresponding the new state to priority queue actions, priority small cost
                 actions.push(node_action + [action[-1]], cost(action))
-    return temp
+    return temp #return array temp
 
 """Read command"""
 def readCommand(argv):
