@@ -109,10 +109,10 @@ class Game:
         return nb_missing_target == 0
 
     def auto_move(self):
-        # strategy = get_move(self.level.structure[:-1], self.level.position_player, 'greedyEuclidean')
+        strategy = get_move(self.level.structure[:-1], self.level.position_player, 'greedyEuclidean')
         # strategy = get_move(self.level.structure[:-1], self.level.position_player, 'greedyManhattan')
         # strategy = get_move(self.level.structure[:-1], self.level.position_player, 'aStarEuclidean')
-        strategy = get_move(self.level.structure[:-1], self.level.position_player, 'aStarManhattan')
+        # strategy = get_move(self.level.structure[:-1], self.level.position_player, 'aStarManhattan')
         
         # with open("assets/sokobanSolver/Solverlevel_" + str(self.index_level) + ".txt", 'w+') as solver_file:
         #     for listitem in strategy:
